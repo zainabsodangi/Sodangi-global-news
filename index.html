@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sodangi Global News</title>
+<title>Sodangi Global Updates</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -17,113 +17,111 @@
 body{background:var(--bg);color:var(--text);}
 header{display:flex;align-items:center;gap:10px;padding:12px;background:#000;border-bottom:3px solid var(--accent);}
 .logo{width:42px;height:42px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;}
-header h1{font-size:20px;margin:0;}
+header h1{font-size:20px;}
 .breaking{background:var(--accent);padding:6px 10px;font-size:14px;white-space:nowrap;overflow:hidden;}
 .breaking span{display:inline-block;padding-left:100%;animation:scroll 18s linear infinite;}
 @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}
 .controls{display:flex;gap:8px;padding:10px;max-width:720px;margin:auto;}
-.controls input,.controls select{flex:1;padding:10px;border:none;border-radius:8px;background:#1f1f1f;color:#fff;}
+.controls select{flex:1;padding:10px;border:none;border-radius:8px;background:#1f1f1f;color:#fff;}
 .feed{max-width:720px;margin:auto;padding:10px;}
 .card{background:var(--card);margin-bottom:18px;border-radius:14px;overflow:hidden;}
 .media{aspect-ratio:16/9;background:#222;}
 .media img{width:100%;height:100%;object-fit:cover;}
 .card h3{margin:12px;font-size:19px;}
-.card p{margin:0 12px 12px;color:var(--muted);}
+.card p{margin:0 12px 12px;color:var(--muted)}
 .card a{display:block;padding:10px 12px 14px;color:#4da3ff;font-weight:bold;text-decoration:none;}
-.ad{background:#0d0d0d;border:1px dashed #333;text-align:center;padding:22px;margin:20px 0;border-radius:14px;color:#aaa;font-weight:bold;}
 footer{text-align:center;padding:18px;font-size:13px;color:#777;}
 </style>
 </head>
+
 <body>
 
 <header>
   <div class="logo">S</div>
-  <h1>Sodangi Global News</h1>
+  <h1>Sodangi Global Updates</h1>
 </header>
 
 <div class="breaking">
-  <span id="breaking">Loading breaking news...</span>
+  <span id="breaking">Loading latest news...</span>
 </div>
 
 <div class="controls">
-  <input id="search" type="search" placeholder="Search news...">
   <select id="filter">
-    <option value="global">🌍 Global</option>
-    <option value="nigeria">🇳🇬 Nigeria</option>
-    <option value="sports">Sports</option>
-    <option value="technology">Technology</option>
-    <option value="entertainment">Entertainment</option>
-    <option value="business">Business</option>
+    <option value="global">🌍 Global News</option>
+    <option value="nigeria">🇳🇬 Nigeria News</option>
   </select>
 </div>
 
 <div class="feed" id="news"></div>
 
-<footer>© 2026 Sodangi Global News</footer>
+<footer>© 2026 Sodangi Global Updates</footer>
 
 <script>
-const API_KEY = "4bc8601bccee42efbc96dd90a4084bf6";
-const PLACEHOLDER = "https://via.placeholder.com/800x450/222/999?text=Sodangi+Global+News";
+const PLACEHOLDER =
+"https://via.placeholder.com/800x450/222/999?text=Sodangi+Global+Updates";
 
-const box = document.getElementById("news");
+const newsBox = document.getElementById("news");
 const breaking = document.getElementById("breaking");
 
-// Safe image helper
-function safeImage(url){ return url && url!=="null" ? url : PLACEHOLDER; }
+function rssToJson(url){
+  return `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+}
 
-// Render news articles
-function renderNews(d){
-  box.innerHTML="";
-  if(!d.articles || d.articles.length===0){
-    box.innerHTML="<p style='text-align:center;color:#aaa'>No news found</p>";
-    breaking.textContent = "No breaking news";
+function render(items){
+  newsBox.innerHTML="";
+  if(!items || items.length===0){
+    newsBox.innerHTML="<p style='text-align:center;color:#aaa'>No news available</p>";
     return;
   }
-  breaking.textContent = "BREAKING: " + (d.articles[0].title || "Breaking news");
+  breaking.textContent = "BREAKING: " + items[0].title;
 
-  d.articles.forEach((n,i)=>{
-    if(i===4 || i===10){ box.innerHTML += `<div class="ad">ADVERTISEMENT</div>`; }
-    const img = safeImage(n.urlToImage);
-    box.innerHTML += `
+  items.forEach(item=>{
+    newsBox.innerHTML += `
       <article class="card">
-        <div class="media"><img src="${img}" loading="eager" alt="News Image"></div>
-        <h3>${n.title || "Breaking News"}</h3>
-        <p>${n.description || "Read full story for details."}</p>
-        <a href="${n.url}" target="_blank">Read more →</a>
+        <div class="media">
+          <img src="${PLACEHOLDER}">
+        </div>
+        <h3>${item.title}</h3>
+        <p>${item.description || "Read full story for details."}</p>
+        <a href="${item.link}" target="_blank">Read more →</a>
       </article>
     `;
   });
 }
 
-// Load Nigeria news with fallback
-async function loadNigeria(){
-  let res = await fetch(`https://newsapi.org/v2/top-headlines?country=ng&pageSize=20&apiKey=${API_KEY}`);
-  let data = await res.json();
-  if(!data.articles || data.articles.length===0){
-    res = await fetch(`https://newsapi.org/v2/everything?q=Nigeria OR Lagos OR Abuja OR Naija&language=en&pageSize=20&apiKey=${API_KEY}`);
-    data = await res.json();
-  }
-  renderNews(data);
+function loadGlobal(){
+  fetch(rssToJson("https://feeds.bbci.co.uk/news/world/rss.xml"))
+    .then(r=>r.text())
+    .then(str=>new DOMParser().parseFromString(str,"text/xml"))
+    .then(data=>{
+      const items=[...data.querySelectorAll("item")].slice(0,15).map(i=>({
+        title:i.querySelector("title")?.textContent,
+        description:i.querySelector("description")?.textContent,
+        link:i.querySelector("link")?.textContent
+      }));
+      render(items);
+    });
 }
 
-// Load global news or search
-function loadGlobal(q="latest"){
-  fetch(`https://newsapi.org/v2/everything?q=${q}&language=en&pageSize=20&apiKey=${API_KEY}`)
-    .then(r=>r.json()).then(renderNews);
+function loadNigeria(){
+  fetch(rssToJson("https://news.google.com/rss/search?q=Nigeria&hl=en-NG&gl=NG&ceid=NG:en"))
+    .then(r=>r.text())
+    .then(str=>new DOMParser().parseFromString(str,"text/xml"))
+    .then(data=>{
+      const items=[...data.querySelectorAll("item")].slice(0,15).map(i=>({
+        title:i.querySelector("title")?.textContent,
+        description:i.querySelector("description")?.textContent,
+        link:i.querySelector("link")?.textContent
+      }));
+      render(items);
+    });
 }
 
-// Initial load
-loadGlobal();
-
-// Filter change
 document.getElementById("filter").addEventListener("change",e=>{
-  if(e.target.value==="nigeria"){ loadNigeria(); } else { loadGlobal(e.target.value); }
+  e.target.value==="nigeria" ? loadNigeria() : loadGlobal();
 });
 
-// Search enter
-document.getElementById("search").addEventListener("keyup",e=>{
-  if(e.key==="Enter"){ loadGlobal(e.target.value); }
-});
+loadGlobal();
 </script>
 
 </body>
