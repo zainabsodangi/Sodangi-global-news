@@ -48,7 +48,8 @@ footer a{color:#fff;text-decoration:underline}
 
 <header>
   <div class="logo-container">
-    <img src="logo.png" alt="Sodangi Logo">
+    <!-- Logo will show only if file exists -->
+    <img src="logo.png" alt="Sodangi Logo" onerror="this.style.display='none'">
     <h1>Sodangi Global News</h1>
   </div>
   <nav>
@@ -83,21 +84,22 @@ footer a{color:#fff;text-decoration:underline}
 const API_KEY = "08644c96462a249488954b0a66827ebc";
 const url = `https://gnews.io/api/v4/top-headlines?lang=en&country=ng&max=12&apikey=${API_KEY}`;
 
-// Fallback news WITH images
+// Fallback news (no images)
 const fallbackNews = [
-  {title:"Nigeria Government Updates Policy", description:"Government introduces new measures to boost the economy.", url:"#", image:"https://source.unsplash.com/400x200/?nigeria,government"},
-  {title:"Tech Startups Growth in Nigeria", description:"Startups in Lagos and Abuja are expanding operations.", url:"#", image:"https://source.unsplash.com/400x200/?nigeria,tech"},
-  {title:"Super Eagles Prepare for Upcoming Matches", description:"National football team gears up for continental qualifiers.", url:"#", image:"https://source.unsplash.com/400x200/?nigeria,sports"}
+  {title:"Nigeria Government Updates Policy", description:"Government introduces new measures to boost the economy.", url:"#"},
+  {title:"Tech Startups Growth in Nigeria", description:"Startups in Lagos and Abuja are expanding operations.", url:"#"},
+  {title:"Super Eagles Prepare for Upcoming Matches", description:"National football team gears up for continental qualifiers.", url:"#"}
 ];
 
-function displayNews(articles){
+function displayNews(articles, showImages=true){
   const container = document.getElementById("news-container");
   container.innerHTML = "";
   articles.forEach(article => {
+    const imgHtml = (showImages && article.image) ? `<img src="${article.image}">` : '';
     const div = document.createElement("div");
     div.className = "news";
     div.innerHTML = `
-      <img src="${article.image || 'https://source.unsplash.com/400x200/?news,nigeria'}">
+      ${imgHtml}
       <div class="news-content">
         <h3>${article.title}</h3>
         <p>${article.description || ""}</p>
@@ -114,12 +116,19 @@ function loadNews(){
   .then(res => res.json())
   .then(data => {
     if(!data.articles || data.articles.length===0){
-      displayNews(fallbackNews); // fallback with images
+      displayNews(fallbackNews,false); // fallback: no images
     } else {
-      displayNews(data.articles); // real news with images
+      // Map API articles to include image
+      const articlesWithImages = data.articles.map(a=>({
+        title:a.title,
+        description:a.description,
+        url:a.url,
+        image:a.image
+      }));
+      displayNews(articlesWithImages,true); // real news with images
     }
   })
-  .catch(()=>displayNews(fallbackNews)); // fallback if fetch fails
+  .catch(()=>displayNews(fallbackNews,false)); // fallback if fetch fails
 }
 
 // Auto-switch every 30 min
