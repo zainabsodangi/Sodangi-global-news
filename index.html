@@ -2,127 +2,136 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sodangi Global Updates</title>
+<title>Sodangi Global News</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- GOOGLE ADSENSE (KEEP EXACT) -->
+<script async
+ src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2968159535814763"
+ crossorigin="anonymous"></script>
+
 <style>
-:root{
-  --bg:#0f0f0f;
-  --card:#1b1b1b;
-  --text:#f2f2f2;
-  --muted:#aaa;
-  --accent:#bb1919;
-}
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
-body{background:var(--bg);color:var(--text);}
-header{display:flex;align-items:center;gap:10px;padding:12px;background:#000;border-bottom:3px solid var(--accent);}
-.logo{width:42px;height:42px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;}
-header h1{font-size:20px;}
-.breaking{background:var(--accent);padding:6px 10px;font-size:14px;white-space:nowrap;overflow:hidden;}
-.breaking span{display:inline-block;padding-left:100%;animation:scroll 18s linear infinite;}
-@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}
-.controls{display:flex;gap:8px;padding:10px;max-width:720px;margin:auto;}
-.controls select{flex:1;padding:10px;border:none;border-radius:8px;background:#1f1f1f;color:#fff;}
-.feed{max-width:720px;margin:auto;padding:10px;}
-.card{background:var(--card);margin-bottom:18px;border-radius:14px;overflow:hidden;}
-.media{aspect-ratio:16/9;background:#222;}
-.media img{width:100%;height:100%;object-fit:cover;}
-.card h3{margin:12px;font-size:19px;}
-.card p{margin:0 12px 12px;color:var(--muted)}
-.card a{display:block;padding:10px 12px 14px;color:#4da3ff;font-weight:bold;text-decoration:none;}
-footer{text-align:center;padding:18px;font-size:13px;color:#777;}
+body{margin:0;font-family:Arial;background:#111;color:#eee}
+header{background:#000;color:#fff;padding:12px;display:flex;align-items:center}
+.logo{background:#c00;color:#fff;font-weight:bold;width:40px;height:40px;border-radius:50%;
+display:flex;align-items:center;justify-content:center;margin-right:10px}
+nav a{color:#fff;margin-left:15px;text-decoration:none;font-weight:bold}
+
+.container{padding:15px}
+.news{background:#1c1c1c;margin-bottom:15px;border-radius:6px;overflow:hidden}
+.news img{width:100%;height:220px;object-fit:cover;background:#333}
+.news-content{padding:10px}
+.news-content h3{margin:5px 0;color:#fff}
+.news-content p{color:#ccc}
+.news-content a{color:#ff3d3d;text-decoration:none;font-weight:bold}
+
+#ad{margin:20px 0;text-align:center}
+
+#about{display:none;background:#1c1c1c;padding:20px;margin:15px;border-radius:6px}
+
+footer{background:#000;color:#ccc;text-align:center;padding:18px;font-size:14px}
+footer .email{margin-top:6px}
 </style>
+
+<script>
+function showAbout(){
+  document.getElementById("newsSection").style.display="none";
+  document.getElementById("about").style.display="block";
+}
+function showHome(){
+  document.getElementById("about").style.display="none";
+  document.getElementById("newsSection").style.display="block";
+}
+
+// ================= REAL NEWS AUTO UPDATE =================
+// API KEY (ALREADY ADDED)
+const apiKey = "4bc8601bccee42efbc96dd90a4084bf6";
+
+// CORS PROXY (for GitHub Pages)
+const proxy = "https://api.allorigins.win/raw?url=";
+
+// Nigeria headlines
+const apiURL = encodeURIComponent(
+  `https://newsapi.org/v2/top-headlines?country=ng&pageSize=10&apiKey=${apiKey}`
+);
+
+fetch(proxy + apiURL)
+.then(res => res.json())
+.then(data => {
+  const container = document.getElementById("newsList");
+  container.innerHTML = "";
+  if(!data.articles || data.articles.length === 0){
+    container.innerHTML = "<p>No news available right now.</p>";
+    return;
+  }
+  data.articles.forEach(article => {
+    if(!article.urlToImage) return;
+    container.innerHTML += `
+      <div class="news">
+        <img src="${article.urlToImage}" loading="lazy">
+        <div class="news-content">
+          <h3>${article.title}</h3>
+          <p>${article.description || ""}</p>
+          <a href="${article.url}" target="_blank" rel="noopener">Read more →</a>
+        </div>
+      </div>
+    `;
+  });
+})
+.catch(err => {
+  document.getElementById("newsList").innerHTML =
+  "<p>Unable to load news right now. Please refresh later.</p>";
+});
+</script>
 </head>
 
 <body>
 
 <header>
   <div class="logo">S</div>
-  <h1>Sodangi Global Updates</h1>
+  <h3>Sodangi Global News</h3>
+  <nav>
+    <a href="#" onclick="showHome()">Home</a>
+    <a href="#" onclick="showAbout()">About</a>
+  </nav>
 </header>
 
-<div class="breaking">
-  <span id="breaking">Loading latest news...</span>
+<!-- NEWS -->
+<div id="newsSection" class="container">
+
+  <div id="newsList">
+    <p>Loading latest news…</p>
+  </div>
+
+  <!-- ADSENSE AUTO ADS -->
+  <div id="ad">
+    <ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-2968159535814763"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
 </div>
 
-<div class="controls">
-  <select id="filter">
-    <option value="global">🌍 Global News</option>
-    <option value="nigeria">🇳🇬 Nigeria News</option>
-  </select>
+<!-- ABOUT -->
+<div id="about">
+  <h2>About Sodangi Global News</h2>
+  <p>
+    Sodangi Global News delivers real-time, verified news from Nigeria and across
+    the globe using trusted international sources.
+  </p>
+  <p>
+    Our mission is credibility, speed, and transparency.
+  </p>
+  <a href="#" onclick="showHome()">← Back to Home</a>
 </div>
 
-<div class="feed" id="news"></div>
-
-<footer>© 2026 Sodangi Global Updates</footer>
-
-<script>
-const PLACEHOLDER =
-"https://via.placeholder.com/800x450/222/999?text=Sodangi+Global+Updates";
-
-const newsBox = document.getElementById("news");
-const breaking = document.getElementById("breaking");
-
-function rssToJson(url){
-  return `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-}
-
-function render(items){
-  newsBox.innerHTML="";
-  if(!items || items.length===0){
-    newsBox.innerHTML="<p style='text-align:center;color:#aaa'>No news available</p>";
-    return;
-  }
-  breaking.textContent = "BREAKING: " + items[0].title;
-
-  items.forEach(item=>{
-    newsBox.innerHTML += `
-      <article class="card">
-        <div class="media">
-          <img src="${PLACEHOLDER}">
-        </div>
-        <h3>${item.title}</h3>
-        <p>${item.description || "Read full story for details."}</p>
-        <a href="${item.link}" target="_blank">Read more →</a>
-      </article>
-    `;
-  });
-}
-
-function loadGlobal(){
-  fetch(rssToJson("https://feeds.bbci.co.uk/news/world/rss.xml"))
-    .then(r=>r.text())
-    .then(str=>new DOMParser().parseFromString(str,"text/xml"))
-    .then(data=>{
-      const items=[...data.querySelectorAll("item")].slice(0,15).map(i=>({
-        title:i.querySelector("title")?.textContent,
-        description:i.querySelector("description")?.textContent,
-        link:i.querySelector("link")?.textContent
-      }));
-      render(items);
-    });
-}
-
-function loadNigeria(){
-  fetch(rssToJson("https://news.google.com/rss/search?q=Nigeria&hl=en-NG&gl=NG&ceid=NG:en"))
-    .then(r=>r.text())
-    .then(str=>new DOMParser().parseFromString(str,"text/xml"))
-    .then(data=>{
-      const items=[...data.querySelectorAll("item")].slice(0,15).map(i=>({
-        title:i.querySelector("title")?.textContent,
-        description:i.querySelector("description")?.textContent,
-        link:i.querySelector("link")?.textContent
-      }));
-      render(items);
-    });
-}
-
-document.getElementById("filter").addEventListener("change",e=>{
-  e.target.value==="nigeria" ? loadNigeria() : loadGlobal();
-});
-
-loadGlobal();
-</script>
+<footer>
+  © 2026 Sodangi Global News
+  <div class="email">Contact: <b>sodangiglobalnews@gmail.com</b></div>
+</footer>
 
 </body>
 </html>
