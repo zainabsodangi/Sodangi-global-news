@@ -5,132 +5,181 @@
 <title>Sodangi Global News</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- GOOGLE ADSENSE (KEEP EXACT) -->
-<script async
- src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2968159535814763"
- crossorigin="anonymous"></script>
+<!-- GOOGLE ADSENSE -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2968159535814763" crossorigin="anonymous"></script>
 
 <style>
-body{margin:0;font-family:Arial;background:#111;color:#eee}
-header{background:#000;color:#fff;padding:12px;display:flex;align-items:center}
-.logo{background:#c00;color:#fff;font-weight:bold;width:40px;height:40px;border-radius:50%;
-display:flex;align-items:center;justify-content:center;margin-right:10px}
-nav a{color:#fff;margin-left:15px;text-decoration:none;font-weight:bold}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#111;color:#eee;line-height:1.5}
+a{text-decoration:none;color:#ff3d3d}
+.container{width:90%;max-width:1200px;margin:0 auto;padding:15px}
 
-.container{padding:15px}
-.news{background:#1c1c1c;margin-bottom:15px;border-radius:6px;overflow:hidden}
-.news img{width:100%;height:220px;object-fit:cover;background:#333}
+/* HEADER */
+header{background:#000;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px;flex-wrap:wrap}
+.logo{background:#c00;color:#fff;font-weight:bold;width:45px;height:45px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;margin-right:10px}
+nav a{color:#fff;margin-left:15px;font-weight:bold}
+
+/* CATEGORIES FILTER */
+#categories{display:flex;flex-wrap:wrap;margin:15px 0;gap:10px}
+#categories button{padding:8px 15px;border:none;border-radius:5px;background:#222;color:#fff;cursor:pointer;transition:0.2s}
+#categories button.active,#categories button:hover{background:#c00}
+
+/* FEATURED NEWS */
+#featured{display:flex;flex-wrap:wrap;margin:15px 0;gap:15px}
+.featured-item{flex:1 1 100%;position:relative;overflow:hidden;border-radius:8px}
+.featured-item img{width:100%;height:300px;object-fit:cover}
+.featured-item h2{position:absolute;bottom:20px;left:20px;color:#fff;background:rgba(0,0,0,0.6);padding:10px;border-radius:4px}
+
+/* NEWS GRID */
+#newsGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:15px;margin-top:15px}
+.news{background:#1c1c1c;border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
+.news img{width:100%;height:200px;object-fit:cover}
 .news-content{padding:10px}
-.news-content h3{margin:5px 0;color:#fff}
-.news-content p{color:#ccc}
-.news-content a{color:#ff3d3d;text-decoration:none;font-weight:bold}
+.news-content h3{color:#fff;margin-bottom:5px}
 
+/* ADSENSE */
 #ad{margin:20px 0;text-align:center}
 
-#about{display:none;background:#1c1c1c;padding:20px;margin:15px;border-radius:6px}
+/* ABOUT */
+#about{background:#1c1c1c;padding:20px;margin:15px 0;border-radius:6px}
+#about h2{margin-bottom:10px}
 
-footer{background:#000;color:#ccc;text-align:center;padding:18px;font-size:14px}
+/* FOOTER */
+footer{background:#000;color:#ccc;text-align:center;padding:18px;margin-top:20px}
 footer .email{margin-top:6px}
+
+/* MOBILE */
+@media(max-width:768px){
+#featured{flex-direction:column}
+.featured-item img{height:220px}
+.news img{height:180px}
+}
 </style>
 
 <script>
-function showAbout(){
+// ===== NAVIGATION =====
+function showSection(id){
   document.getElementById("newsSection").style.display="none";
-  document.getElementById("about").style.display="block";
-}
-function showHome(){
   document.getElementById("about").style.display="none";
-  document.getElementById("newsSection").style.display="block";
+  document.getElementById(id).style.display="block";
 }
 
-// ================= REAL NEWS AUTO UPDATE =================
-// API KEY (ALREADY ADDED)
-const apiKey = "4bc8601bccee42efbc96dd90a4084bf6";
+// ===== REAL NEWS (GNEWS API) =====
+const apiKey = "79ee757d8410abd82e9d7910ba332fdb";
+let allArticles = [];
 
-// CORS PROXY (for GitHub Pages)
-const proxy = "https://api.allorigins.win/raw?url=";
+const url = `https://gnews.io/api/v4/top-headlines?country=ng&lang=en&max=20&apikey=${apiKey}`;
 
-// Nigeria headlines
-const apiURL = encodeURIComponent(
-  `https://newsapi.org/v2/top-headlines?country=ng&pageSize=10&apiKey=${apiKey}`
-);
-
-fetch(proxy + apiURL)
-.then(res => res.json())
-.then(data => {
-  const container = document.getElementById("newsList");
-  container.innerHTML = "";
-  if(!data.articles || data.articles.length === 0){
-    container.innerHTML = "<p>No news available right now.</p>";
-    return;
-  }
-  data.articles.forEach(article => {
-    if(!article.urlToImage) return;
-    container.innerHTML += `
-      <div class="news">
-        <img src="${article.urlToImage}" loading="lazy">
-        <div class="news-content">
-          <h3>${article.title}</h3>
-          <p>${article.description || ""}</p>
-          <a href="${article.url}" target="_blank" rel="noopener">Read more →</a>
-        </div>
-      </div>
-    `;
-  });
+fetch(url)
+.then(res=>res.json())
+.then(data=>{
+  allArticles = data.articles;
+  displayArticles('all');
 })
-.catch(err => {
-  document.getElementById("newsList").innerHTML =
-  "<p>Unable to load news right now. Please refresh later.</p>";
+.catch(()=>{
+  document.getElementById("featured").innerHTML="<p>Unable to load news.</p>";
+  document.getElementById("newsGrid").innerHTML="";
 });
-</script>
-</head>
 
+// ===== DISPLAY FUNCTION =====
+function displayArticles(category){
+  const featured = document.getElementById("featured");
+  const grid = document.getElementById("newsGrid");
+  featured.innerHTML = "";
+  grid.innerHTML = "";
+
+  let filtered = allArticles;
+  if(category !== 'all'){
+    filtered = allArticles.filter(n=>n.title.toLowerCase().includes(category));
+  }
+
+  filtered.forEach((n,i)=>{
+    if(!n.image) return;
+    if(i<2){
+      featured.innerHTML += `
+        <div class="featured-item">
+          <img src="${n.image}">
+          <h2>${n.title}</h2>
+          <a href="${n.url}" target="_blank" style="position:absolute;top:0;left:0;width:100%;height:100%;"></a>
+        </div>`;
+    } else{
+      grid.innerHTML += `
+        <div class="news">
+          <img src="${n.image}" loading="lazy">
+          <div class="news-content">
+            <h3>${n.title}</h3>
+            <p>${n.description||""}</p>
+            <a href="${n.url}" target="_blank">Read more →</a>
+          </div>
+        </div>`;
+    }
+  });
+}
+
+// ===== CATEGORY BUTTONS =====
+function setCategory(btn,cat){
+  document.querySelectorAll('#categories button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  displayArticles(cat);
+}
+</script>
+
+</head>
 <body>
 
 <header>
-  <div class="logo">S</div>
-  <h3>Sodangi Global News</h3>
+  <div style="display:flex;align-items:center">
+    <div class="logo">S</div>
+    <h3>Sodangi Global News</h3>
+  </div>
   <nav>
-    <a href="#" onclick="showHome()">Home</a>
-    <a href="#" onclick="showAbout()">About</a>
+    <a href="#" onclick="showSection('newsSection')">Home</a>
+    <a href="#" onclick="showSection('about')">About</a>
   </nav>
 </header>
 
-<!-- NEWS -->
 <div id="newsSection" class="container">
 
-  <div id="newsList">
-    <p>Loading latest news…</p>
+  <!-- CATEGORIES -->
+  <div id="categories">
+    <button class="active" onclick="setCategory(this,'all')">All</button>
+    <button onclick="setCategory(this,'nigeria')">Nigeria</button>
+    <button onclick="setCategory(this,'global')">Global</button>
+    <button onclick="setCategory(this,'politics')">Politics</button>
+    <button onclick="setCategory(this,'sports')">Sports</button>
   </div>
 
-  <!-- ADSENSE AUTO ADS -->
+  <!-- FEATURED NEWS -->
+  <div id="featured">Loading featured news…</div>
+
+  <!-- NEWS GRID -->
+  <div id="newsGrid"></div>
+
+  <!-- ADSENSE -->
   <div id="ad">
     <ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-2968159535814763"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
+      style="display:block"
+      data-ad-client="ca-pub-2968159535814763"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>
     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
-
 </div>
 
 <!-- ABOUT -->
-<div id="about">
+<div id="about" class="container" style="display:none">
   <h2>About Sodangi Global News</h2>
   <p>
-    Sodangi Global News delivers real-time, verified news from Nigeria and across
-    the globe using trusted international sources.
+    Sodangi Global News delivers verified real-time news from Nigeria and around the world. 
+    Our mission: credibility, speed, and transparency with professional BBC-style layout.
   </p>
-  <p>
-    Our mission is credibility, speed, and transparency.
-  </p>
-  <a href="#" onclick="showHome()">← Back to Home</a>
+  <p>Email: sodangiglobalnews@gmail.com</p>
+  <a href="#" onclick="showSection('newsSection')">← Back to Home</a>
 </div>
 
 <footer>
-  © 2026 Sodangi Global News
-  <div class="email">Contact: <b>sodangiglobalnews@gmail.com</b></div>
+© 2026 Sodangi Global News  
+<div class="email">Contact: <b>sodangiglobalnews@gmail.com</b></div>
 </footer>
 
 </body>
