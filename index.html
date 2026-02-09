@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,124 +6,100 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- Google AdSense -->
-<script async
- src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2968159535814763"
- crossorigin="anonymous"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2968159535814763"
+     crossorigin="anonymous"></script>
 
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#f2f2f2}
-header{background:#b00000;color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:20px;font-weight:bold}
-nav a{color:#fff;margin-left:15px;text-decoration:none;font-weight:bold}
-.container{max-width:1100px;margin:auto;padding:15px}
-.hero img{width:100%;border-radius:6px}
-.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}
-.card{background:#fff;border-radius:6px;overflow:hidden}
-.card img{width:100%;height:180px;object-fit:cover}
-.card .text{padding:10px}
-.card h3{margin:0;font-size:17px}
-.card p{font-size:14px;color:#444}
-.card a{color:#b00000;text-decoration:none;font-weight:bold}
-.section{display:none;background:#f5f5f5;padding:20px}
-.section .box{max-width:800px;margin:auto;background:#fff;padding:20px;border-radius:6px}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f4f4}
+header{background:#111;color:#fff;padding:15px}
+header h1{margin:0;font-size:22px}
+nav a{color:#fff;margin-right:15px;text-decoration:none;font-size:14px}
+.container{padding:15px}
+.news{background:#fff;margin-bottom:15px;border-radius:6px;overflow:hidden}
+.news img{width:100%;height:200px;object-fit:cover}
+.news-content{padding:10px}
+.news-content h3{margin:0;font-size:18px}
+.news-content p{font-size:14px;color:#444}
+.news-content a{display:inline-block;margin-top:8px;color:#c00;text-decoration:none;font-weight:bold}
+section{display:none;background:#fff;padding:15px;border-radius:6px}
 footer{background:#111;color:#fff;text-align:center;padding:15px;font-size:14px}
-footer a{color:#fff;text-decoration:underline}
 </style>
 </head>
 
 <body>
 
 <header>
-  <div class="logo">Sodangi Global News</div>
+  <h1>Sodangi Global News</h1>
   <nav>
-    <a href="#" onclick="showPage('home')">Home</a>
-    <a href="#" onclick="showPage('about')">About</a>
-    <a href="#" onclick="showPage('privacy')">Privacy</a>
-    <a href="#" onclick="showPage('terms')">Terms</a>
+    <a href="#" onclick="showHome()">Home</a>
+    <a href="#" onclick="showSection('about')">About</a>
+    <a href="#" onclick="showSection('privacy')">Privacy</a>
+    <a href="#" onclick="showSection('terms')">Terms</a>
   </nav>
 </header>
 
-<!-- HOME -->
-<div id="home" class="container">
-  <div class="hero">
-    <img src="https://source.unsplash.com/1200x500/?news,world" alt="news">
-  </div>
+<div class="container" id="home">
   <h2>Latest News</h2>
-  <div id="news" class="news-grid"></div>
+  <div id="news-container">Loading news...</div>
 </div>
 
-<!-- ABOUT -->
-<div id="about" class="section">
-  <div class="box">
-    <h2 style="color:#b00000">About Sodangi Global News</h2>
-    <p><strong>Sodangi Global News</strong> is an independent digital news platform
-    delivering real-time headlines from Nigeria and around the world.</p>
+<section class="container" id="about">
+  <h2>About Us</h2>
+  <p>Sodangi Global News is a digital news platform bringing you real-time global and local news updates with accuracy and trust.</p>
+</section>
 
-    <h3>What We Do</h3>
-    <p>We aggregate verified news from trusted global publishers using licensed news APIs.</p>
+<section class="container" id="privacy">
+  <h2>Privacy Policy</h2>
+  <p>We respect your privacy. Cookies and ads may be used to improve user experience and serve relevant advertisements.</p>
+</section>
 
-    <h3>Our Mission</h3>
-    <p>To provide accurate, timely and reliable information to our readers.</p>
-
-    <h3>Contact</h3>
-    <p>Email: <strong>sodangiglobalnews@gmail.com</strong></p>
-  </div>
-</div>
-
-<!-- PRIVACY -->
-<div id="privacy" class="section">
-  <div class="box">
-    <h2 style="color:#b00000">Privacy Policy</h2>
-    <p>We respect user privacy. We do not collect personal data directly.</p>
-    <p>Google AdSense may use cookies to show relevant ads.</p>
-    <p>By using this site, you agree to this policy.</p>
-  </div>
-</div>
-
-<!-- TERMS -->
-<div id="terms" class="section">
-  <div class="box">
-    <h2 style="color:#b00000">Terms & Conditions</h2>
-    <p>This website provides news for informational purposes only.</p>
-    <p>We do not own third-party news content.</p>
-    <p>Terms may change without notice.</p>
-  </div>
-</div>
+<section class="container" id="terms">
+  <h2>Terms & Conditions</h2>
+  <p>By using this website, you agree to our terms. Content is provided for informational purposes only.</p>
+</section>
 
 <footer>
+  <p>Contact: sodangiglobalnews@gmail.com</p>
   <p>© 2026 Sodangi Global News</p>
-  <p>Email: sodangiglobalnews@gmail.com</p>
 </footer>
 
 <script>
-const apiKey = "45fe950531bb5a3d71b02257207f9733";
-const url = `https://newsdata.io/api/1/news?apikey=${apiKey}&country=ng&language=en`;
+const API_KEY = "08644c96462a249488954b0a66827ebc";
+const url = `https://gnews.io/api/v4/top-headlines?lang=en&country=us&max=10&apikey=${API_KEY}`;
 
 fetch(url)
 .then(res => res.json())
 .then(data => {
-  const newsBox = document.getElementById("news");
-  if(!data.results){newsBox.innerHTML="No news available";return;}
-  data.results.slice(0,12).forEach(n=>{
-    const img = n.image_url || "https://source.unsplash.com/400x300/?news";
-    newsBox.innerHTML += `
-      <div class="card">
-        <img src="${img}">
-        <div class="text">
-          <h3>${n.title}</h3>
-          <p>${n.description || ""}</p>
-          <a href="${n.link}" target="_blank">Read more</a>
-        </div>
-      </div>`;
+  const container = document.getElementById("news-container");
+  container.innerHTML = "";
+  data.articles.forEach(article => {
+    const div = document.createElement("div");
+    div.className = "news";
+    div.innerHTML = `
+      <img src="${article.image || 'https://via.placeholder.com/400x200'}">
+      <div class="news-content">
+        <h3>${article.title}</h3>
+        <p>${article.description || ""}</p>
+        <a href="${article.url}" target="_blank">Read more</a>
+      </div>
+    `;
+    container.appendChild(div);
   });
+})
+.catch(() => {
+  document.getElementById("news-container").innerHTML = "No news available.";
 });
 
-function showPage(id){
-  ["home","about","privacy","terms"].forEach(p=>{
-    document.getElementById(p).style.display = p===id?"block":"none";
-  });
+function showSection(id){
+  document.getElementById("home").style.display="none";
+  document.querySelectorAll("section").forEach(s=>s.style.display="none");
+  document.getElementById(id).style.display="block";
+}
+function showHome(){
+  document.getElementById("home").style.display="block";
+  document.querySelectorAll("section").forEach(s=>s.style.display="none");
 }
 </script>
 
 </body>
-</html>  
+</html>      
