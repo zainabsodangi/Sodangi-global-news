@@ -24,9 +24,10 @@ nav a{color:#fff;margin-left:15px;font-weight:bold}
 #categories button{padding:8px 15px;border:none;border-radius:5px;background:#222;color:#fff;cursor:pointer;transition:0.2s}
 #categories button.active,#categories button:hover{background:#c00}
 
-/* FEATURED NEWS */
-#featured{display:flex;flex-wrap:wrap;margin:15px 0;gap:15px}
-.featured-item{flex:1 1 100%;position:relative;overflow:hidden;border-radius:8px}
+/* FEATURED NEWS SLIDER */
+#featured{position:relative;margin:15px 0;overflow:hidden;border-radius:8px}
+.featured-item{position:absolute;top:0;left:100%;width:100%;height:300px;transition:0.5s;opacity:0}
+.featured-item.active{left:0;opacity:1}
 .featured-item img{width:100%;height:300px;object-fit:cover}
 .featured-item h2{position:absolute;bottom:20px;left:20px;color:#fff;background:rgba(0,0,0,0.6);padding:10px;border-radius:4px}
 
@@ -50,8 +51,7 @@ footer .email{margin-top:6px}
 
 /* MOBILE */
 @media(max-width:768px){
-#featured{flex-direction:column}
-.featured-item img{height:220px}
+#featured .featured-item img{height:220px}
 .news img{height:180px}
 }
 </style>
@@ -68,13 +68,12 @@ function showSection(id){
 const apiKey = "79ee757d8410abd82e9d7910ba332fdb";
 let allArticles = [];
 
-const url = `https://gnews.io/api/v4/top-headlines?country=ng&lang=en&max=20&apikey=${apiKey}`;
-
-fetch(url)
+fetch(`https://gnews.io/api/v4/top-headlines?country=ng&lang=en&max=20&apikey=${apiKey}`)
 .then(res=>res.json())
 .then(data=>{
-  allArticles = data.articles;
+  allArticles = data.articles || [];
   displayArticles('all');
+  startSlider();
 })
 .catch(()=>{
   document.getElementById("featured").innerHTML="<p>Unable to load news.</p>";
@@ -96,8 +95,9 @@ function displayArticles(category){
   filtered.forEach((n,i)=>{
     if(!n.image) return;
     if(i<2){
+      let active = i===0 ? 'active' : '';
       featured.innerHTML += `
-        <div class="featured-item">
+        <div class="featured-item ${active}">
           <img src="${n.image}">
           <h2>${n.title}</h2>
           <a href="${n.url}" target="_blank" style="position:absolute;top:0;left:0;width:100%;height:100%;"></a>
@@ -121,6 +121,18 @@ function setCategory(btn,cat){
   document.querySelectorAll('#categories button').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   displayArticles(cat);
+}
+
+// ===== FEATURED NEWS SLIDER =====
+function startSlider(){
+  const slides = document.querySelectorAll('.featured-item');
+  let index = 0;
+  if(slides.length<2) return;
+  setInterval(()=>{
+    slides.forEach(s=>s.classList.remove('active'));
+    index = (index+1)%slides.length;
+    slides[index].classList.add('active');
+  },5000);
 }
 </script>
 
