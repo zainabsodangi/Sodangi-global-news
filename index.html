@@ -11,12 +11,15 @@
 
 <style>
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f4f4}
-header{background:#111;color:#fff;padding:15px;display:flex;justify-content:space-between;align-items:center}
+header{background:#111;color:#fff;padding:10px 15px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
 header h1{margin:0;font-size:22px}
+header .logo-container{display:flex;align-items:center}
+header .logo-container img{height:40px;margin-right:10px}
 nav a{color:#fff;margin-left:15px;text-decoration:none;font-weight:bold;font-size:14px}
 .container{padding:15px}
-.news{background:#fff;margin-bottom:15px;border-radius:6px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
-.news img{width:100%;height:200px;object-fit:cover}
+.news{background:#fff;margin-bottom:15px;border-radius:6px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:transform 0.3s}
+.news:hover{transform:scale(1.02)}
+.news img{width:100%;height:auto;object-fit:cover}
 .news-content{padding:10px}
 .news-content h3{margin:0;font-size:18px}
 .news-content p{font-size:14px;color:#444}
@@ -24,13 +27,30 @@ nav a{color:#fff;margin-left:15px;text-decoration:none;font-weight:bold;font-siz
 section{display:none;background:#fff;padding:15px;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
 footer{background:#111;color:#fff;text-align:center;padding:15px;font-size:14px}
 footer a{color:#fff;text-decoration:underline}
+
+/* Mobile Optimization */
+@media(max-width:768px){
+  header{flex-direction:column;align-items:flex-start}
+  nav{margin-top:10px}
+  nav a{margin-left:0;margin-right:10px}
+  .news-content h3{font-size:16px}
+  .news-content p{font-size:13px}
+}
+@media(max-width:480px){
+  header h1{font-size:18px}
+  .news-content h3{font-size:15px}
+  .news-content p{font-size:12px}
+}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>Sodangi Global News</h1>
+  <div class="logo-container">
+    <img src="logo.png" alt="Sodangi Logo">
+    <h1>Sodangi Global News</h1>
+  </div>
   <nav>
     <a href="#" onclick="showHome()">Home</a>
     <a href="#" onclick="showSection('about')">About</a>
@@ -63,26 +83,11 @@ footer a{color:#fff;text-decoration:underline}
 const API_KEY = "08644c96462a249488954b0a66827ebc";
 const url = `https://gnews.io/api/v4/top-headlines?lang=en&country=ng&max=12&apikey=${API_KEY}`;
 
-// Static fallback news in case API fails or limit reached
+// Fallback news WITH images
 const fallbackNews = [
-  {
-    title: "Nigerian Government Announces New Economic Policy",
-    description: "The government introduced new measures to boost the economy and support small businesses.",
-    url: "#",
-    image: "https://source.unsplash.com/400x200/?nigeria,government"
-  },
-  {
-    title: "Nigerian Tech Startups See Growth in 2026",
-    description: "Startups in Lagos and Abuja are raising funds and expanding operations.",
-    url: "#",
-    image: "https://source.unsplash.com/400x200/?nigeria,tech"
-  },
-  {
-    title: "Sports Update: Super Eagles Ready for Upcoming Matches",
-    description: "The national football team prepares for the continental qualifiers.",
-    url: "#",
-    image: "https://source.unsplash.com/400x200/?nigeria,sports"
-  }
+  {title:"Nigeria Government Updates Policy", description:"Government introduces new measures to boost the economy.", url:"#", image:"https://source.unsplash.com/400x200/?nigeria,government"},
+  {title:"Tech Startups Growth in Nigeria", description:"Startups in Lagos and Abuja are expanding operations.", url:"#", image:"https://source.unsplash.com/400x200/?nigeria,tech"},
+  {title:"Super Eagles Prepare for Upcoming Matches", description:"National football team gears up for continental qualifiers.", url:"#", image:"https://source.unsplash.com/400x200/?nigeria,sports"}
 ];
 
 function displayNews(articles){
@@ -103,18 +108,23 @@ function displayNews(articles){
   });
 }
 
-fetch(url)
-.then(res => res.json())
-.then(data => {
-  if(!data.articles || data.articles.length===0){
-    displayNews(fallbackNews);
-  } else {
-    displayNews(data.articles);
-  }
-})
-.catch(() => {
-  displayNews(fallbackNews);
-});
+// Load news from API, fallback if fails
+function loadNews(){
+  fetch(url)
+  .then(res => res.json())
+  .then(data => {
+    if(!data.articles || data.articles.length===0){
+      displayNews(fallbackNews); // fallback with images
+    } else {
+      displayNews(data.articles); // real news with images
+    }
+  })
+  .catch(()=>displayNews(fallbackNews)); // fallback if fetch fails
+}
+
+// Auto-switch every 30 min
+setInterval(loadNews, 30*60*1000);
+loadNews();
 
 function showSection(id){
   document.getElementById("home").style.display="none";
