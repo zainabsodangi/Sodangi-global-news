@@ -64,36 +64,38 @@ function showSection(id){
   document.getElementById(id).style.display="block";
 }
 
-// ===== REAL NEWS (GNEWS API) =====
+// ===== FETCH REAL NEWS =====
 const apiKey = "79ee757d8410abd82e9d7910ba332fdb";
 let allArticles = [];
 
-fetch(`https://gnews.io/api/v4/top-headlines?country=ng&lang=en&max=20&apikey=${apiKey}`)
-.then(res=>res.json())
-.then(data=>{
-  allArticles = data.articles || [];
-  displayArticles();
-  startSlider();
-})
-.catch(()=>{
-  document.getElementById("featured").innerHTML="<p>Unable to load news.</p>";
-  document.getElementById("newsGrid").innerHTML="";
-});
+function loadNews(){
+  fetch(`https://gnews.io/api/v4/top-headlines?country=ng&lang=en&max=20&apikey=${apiKey}`)
+  .then(res=>res.json())
+  .then(data=>{
+    allArticles = data.articles || [];
+    displayArticles();
+    startSlider();
+  })
+  .catch(()=>{
+    document.getElementById("featured").innerHTML="<p>Unable to load news.</p>";
+    document.getElementById("newsGrid").innerHTML="";
+  });
+}
 
-// ===== DISPLAY FUNCTION =====
+// ===== DISPLAY ARTICLES =====
 function displayArticles(){
   const featured = document.getElementById("featured");
   const grid = document.getElementById("newsGrid");
   featured.innerHTML = "";
   grid.innerHTML = "";
 
-  if(allArticles.length === 0){
-    featured.innerHTML = "<p>No news available.</p>";
+  if(!allArticles || allArticles.length===0){
+    featured.innerHTML="<p>No news available.</p>";
     return;
   }
 
   allArticles.forEach((n,i)=>{
-    if(!n.image) return; // skip articles with no image
+    if(!n.image) return;
     if(i<2){
       let active = i===0 ? 'active' : '';
       featured.innerHTML += `
@@ -116,14 +118,14 @@ function displayArticles(){
   });
 }
 
-// ===== CATEGORY BUTTONS =====
+// ===== CATEGORY BUTTONS (highlight only, all news show) =====
 function setCategory(btn){
   document.querySelectorAll('#categories button').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  displayArticles(); // always show all news regardless of category
+  displayArticles(); // all news always show
 }
 
-// ===== FEATURED NEWS SLIDER =====
+// ===== FEATURED SLIDER =====
 function startSlider(){
   const slides = document.querySelectorAll('.featured-item');
   let index = 0;
@@ -134,6 +136,9 @@ function startSlider(){
     slides[index].classList.add('active');
   },5000);
 }
+
+// ===== INIT =====
+window.onload = loadNews;
 </script>
 
 </head>
@@ -195,4 +200,4 @@ function startSlider(){
 </footer>
 
 </body>
-</html> 
+</html>
