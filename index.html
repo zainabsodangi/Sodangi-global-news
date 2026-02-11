@@ -2,86 +2,102 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sodangi Global News</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sodangi Global News</title>
 
-<!-- AdSense verification -->
 <meta name="google-adsense-account" content="ca-pub-2968159535814763">
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2968159535814763"
+<script async 
+src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2968159535814763"
 crossorigin="anonymous"></script>
 
 <style>
-body{margin:0;font-family:Arial;background:#f4f4f4}
-header{background:#111;color:#fff;padding:10px 15px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
+body{margin:0;font-family:Arial;background:#f2f2f2}
+header{
+background:#111;color:#fff;padding:10px 20px;
+display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap
+}
 .logo{display:flex;align-items:center}
 .logo img{height:40px;margin-right:10px}
-nav a{color:#fff;margin-left:15px;text-decoration:none;font-weight:bold}
-.container{padding:15px}
-.news{background:#fff;margin-bottom:15px;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,.1)}
-.news img{width:100%}
-.news-content{padding:10px}
-.news-content h3{margin:0}
-section{display:none;background:#fff;padding:15px;border-radius:6px}
-footer{background:#111;color:#fff;text-align:center;padding:15px}
+nav a{
+color:#fff;margin-left:20px;text-decoration:none;font-weight:bold
+}
+.container{padding:20px}
+.news{
+background:#fff;margin-bottom:20px;border-radius:6px;
+box-shadow:0 2px 6px rgba(0,0,0,.1);overflow:hidden
+}
+.news img{width:100%;height:220px;object-fit:cover}
+.news-content{padding:15px}
+.news-content h3{margin-top:0}
+.news-content a{
+display:inline-block;margin-top:10px;
+color:#c00;font-weight:bold;text-decoration:none
+}
+section{display:none;background:#fff;padding:20px;border-radius:6px}
+footer{
+background:#111;color:#fff;text-align:center;padding:15px;margin-top:30px
+}
 </style>
 </head>
 
 <body>
 
 <header>
-  <div class="logo">
-    <img src="logo.png" onerror="this.style.display='none'">
-    <h2>Sodangi Global News</h2>
-  </div>
-  <nav>
-    <a href="#" onclick="showHome()">Home</a>
-    <a href="#" onclick="showSection('about')">About</a>
-    <a href="#" onclick="showSection('terms')">Terms & Privacy</a>
-  </nav>
+<div class="logo">
+<img src="logo.png" onerror="this.style.display='none'">
+<h2>Sodangi Global News</h2>
+</div>
+
+<nav>
+<a href="#" onclick="showHome()">Home</a>
+<a href="#" onclick="showSection('about')">About</a>
+<a href="#" onclick="showSection('terms')">Terms & Privacy</a>
+</nav>
 </header>
 
 <div class="container" id="home">
 
-<h2>Latest Headlines</h2>
+<h2>Top Headlines</h2>
 
-<!-- 🔴 STATIC NEWS (VERY IMPORTANT FOR ADSENSE) -->
+<!-- STATIC CONTENT FOR ADSENSE -->
 <div id="static-news">
-  <div class="news">
-    <div class="news-content">
-      <h3>Nigeria economy shows signs of recovery</h3>
-      <p>Experts say economic indicators are improving gradually.</p>
-    </div>
-  </div>
 
-  <div class="news">
-    <div class="news-content">
-      <h3>Super Eagles prepare for major tournament</h3>
-      <p>The national team intensifies training ahead of qualifiers.</p>
-    </div>
-  </div>
-
-  <div class="news">
-    <div class="news-content">
-      <h3>Technology startups growing rapidly in Africa</h3>
-      <p>Innovation hubs continue to attract investors.</p>
-    </div>
-  </div>
+<div class="news">
+<div class="news-content">
+<h3>Nigeria Economy Shows Recovery Signs</h3>
+<p>Experts say economic indicators are gradually improving across sectors.</p>
+</div>
 </div>
 
-<!-- REAL API NEWS WILL REPLACE THIS -->
+<div class="news">
+<div class="news-content">
+<h3>Technology Innovation Expands in Africa</h3>
+<p>Startups continue attracting investors and global partnerships.</p>
+</div>
+</div>
+
+<div class="news">
+<div class="news-content">
+<h3>Global Sports Update This Week</h3>
+<p>Major tournaments are drawing attention worldwide.</p>
+</div>
+</div>
+
+</div>
+
 <div id="news-container"></div>
 
 </div>
 
 <section class="container" id="about">
 <h2>About Us</h2>
-<p>Sodangi Global News is an independent digital platform delivering reliable Nigerian and global news.</p>
+<p>Sodangi Global News delivers reliable Nigerian and international news updates in real time.</p>
 </section>
 
 <section class="container" id="terms">
 <h2>Terms & Privacy</h2>
-<p>We respect user privacy. Ads and cookies may be used to improve experience. Content belongs to respective publishers.</p>
+<p>We respect your privacy. Third-party ads and cookies may be used to enhance user experience. All news belongs to respective publishers.</p>
 </section>
 
 <footer>
@@ -93,37 +109,52 @@ footer{background:#111;color:#fff;text-align:center;padding:15px}
 const API_KEY="08644c96462a249488954b0a66827ebc";
 const url=`https://gnews.io/api/v4/top-headlines?country=ng&lang=en&max=10&apikey=${API_KEY}`;
 
-function loadNews(){
-fetch(url)
-.then(r=>r.json())
-.then(d=>{
- if(!d.articles) return;
- document.getElementById("static-news").style.display="none";
- const c=document.getElementById("news-container");
- c.innerHTML="";
- d.articles.forEach(a=>{
-  const div=document.createElement("div");
-  div.className="news";
-  div.innerHTML=`
-   ${a.image?`<img src="${a.image}">`:""}
-   <div class="news-content">
-    <h3>${a.title}</h3>
-    <p>${a.description||""}</p>
-    <a href="${a.url}" target="_blank">Read more</a>
-   </div>`;
-  c.appendChild(div);
- });
-})
-.catch(()=>console.log("API limit or error"));
+async function loadNews(){
+try{
+const response=await fetch(url);
+const data=await response.json();
+
+if(data.articles && data.articles.length>0){
+
+document.getElementById("static-news").style.display="none";
+
+const container=document.getElementById("news-container");
+container.innerHTML="";
+
+data.articles.forEach(article=>{
+const div=document.createElement("div");
+div.className="news";
+
+div.innerHTML=`
+${article.image ? `<img src="${article.image}">` : ""}
+<div class="news-content">
+<h3>${article.title}</h3>
+<p>${article.description || ""}</p>
+<a href="${article.url}" target="_blank">Read full story</a>
+</div>
+`;
+
+container.appendChild(div);
+});
+
+}else{
+console.log("No articles returned");
 }
+
+}catch(error){
+console.log("API limit reached or error");
+}
+}
+
 loadNews();
-setInterval(loadNews,30*60*1000);
+setInterval(loadNews,600000);
 
 function showSection(id){
 document.getElementById("home").style.display="none";
 document.querySelectorAll("section").forEach(s=>s.style.display="none");
 document.getElementById(id).style.display="block";
 }
+
 function showHome(){
 document.getElementById("home").style.display="block";
 document.querySelectorAll("section").forEach(s=>s.style.display="none");
